@@ -41,27 +41,14 @@
 		<param name="auto_save_map" value="false"/>
 	</node>
 
-	  
-	<node name="cilab_showMark" pkg="cilab_nav" type="cilab_show_mark.py" output="screen"/>
-	<node name="cilab_multiGoal" pkg="cilab_nav" type="cilab_multiGoalListen.py" output="screen"/>
-	<node name="cilab_cancelGoal" pkg="cilab_nav" type="cilab_cancelGoalListen.py" output="screen"/>
+	<!-- 시각장애인과 로봇의 인터페이스 -->
+	<node name="user_interface" pkg="cilab_nav" type="user_interface.py" output="screen"/>
 
-
-    <!-- !!이름지정해야됨!!  -->
-    <!-- STT 시작 후 Navigation 실행 -->
-    <!-- <node name="user_interface" pkg="cilab_nav" type="user_interface.py" output="screen"/> -->
-    
-    <!-- !!이름지정해야됨!!  -->
-    <!-- Robot에게 위치점(Goal: destination)을 발행하는 python 코드 -->
-	<node name="set_destination" pkg="cilab_nav" type="navigation_patrol.py" output="screen"/>
-
-    <!-- !!이름지정해야됨!!  -->
-    <!-- 현위치를 가져와서 Proessing하는 python 코드  -->
-    <!-- <node name="get_current" pkg="cilab_nav" type="<이름 지정하기>.py" output="screen"/> -->
-
-    <!-- !!이름지정해야됨!!  -->
-    <!-- 속도 및 현위치 조정하는 python 코드 -->
-    <!-- <node name="adjust_switch" pkg="cilab_nav" type="<이름 지정하기>.py" output="screen"/> -->
+	<!-- Robot에게 위치점(Goal: destination)을 보내어 네비게이션 실행 -->
+	<node name="navigation" pkg="cilab_nav" type="navigation_patrol.py" output="screen"/>
+	
+	<!-- 시각 장애인이 잘 따라오고 있는 지 확인 -->
+	<node name="human_tracking" pkg="cilab_nav" type="object_tracking.py" output="screen"/>
 
 
 </launch>
