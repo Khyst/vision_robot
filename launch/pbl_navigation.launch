@@ -1,0 +1,67 @@
+<launch>
+    <arg name="resolution" default="480p"/>
+	
+	<!-- 라이다 및 위치 측정 장치 구동 Package -->
+	<include file="$(find cilab_driver)/launch/cilab_bringup.launch" />
+
+        <!-- USB 카메라 구동 Package -->
+        <include file="$(find cilab_driver)/launch/cilab_camera.launch">
+		<arg name="resolution" value="$(arg resolution)"/>
+	</include>
+
+	<!-- map_server 구동 Package (지도 배포) -->
+	<!-- <arg name="map_file" default="$(find cilab_nav)/maps/cilab_test.yaml"/> -->
+	<arg name="map_file" default="/home/cilab/ros_ws/05_25.yaml"/>
+	<node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+	
+	<arg name="initial_pose_x" default="0.0"/>
+	<arg name="initial_pose_y" default="0.0"/>
+	<arg name="initial_pose_a" default="0.0"/>
+	
+	<!-- AMCL 구동 package  -->
+	<include file="$(find cilab_nav)/launch/include/amcl_base.launch">
+		<arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+		<arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+		<arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+	</include>
+
+    <!-- Navigation Plan Algorithm Package -->
+	<include file="$(find cilab_nav)/launch/include/teb_move_base.launch"/>
+
+	<include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
+
+	<node name="robot_pose_publisher" pkg="robot_pose_publisher" type="robot_pose_publisher">
+		<param name="base_frame" value="base_footprint"/>
+	</node>
+
+	<arg name="debug" default="false"/>
+
+	<node pkg="world_canvas_server" type="world_canvas_server" name="world_canvas_server" args="$(arg debug)">
+		<param name="start_map_manager" value="true"/>
+		<param name="auto_save_map" value="false"/>
+	</node>
+
+	  
+	<node name="cilab_showMark" pkg="cilab_nav" type="cilab_show_mark.py" output="screen"/>
+	<node name="cilab_multiGoal" pkg="cilab_nav" type="cilab_multiGoalListen.py" output="screen"/>
+	<node name="cilab_cancelGoal" pkg="cilab_nav" type="cilab_cancelGoalListen.py" output="screen"/>
+
+
+    <!-- !!이름지정해야됨!!  -->
+    <!-- STT 시작 후 Navigation 실행 -->
+    <!-- <node name="user_interface" pkg="cilab_nav" type="user_interface.py" output="screen"/> -->
+    
+    <!-- !!이름지정해야됨!!  -->
+    <!-- Robot에게 위치점(Goal: destination)을 발행하는 python 코드 -->
+	<node name="set_destination" pkg="cilab_nav" type="navigation_patrol.py" output="screen"/>
+
+    <!-- !!이름지정해야됨!!  -->
+    <!-- 현위치를 가져와서 Proessing하는 python 코드  -->
+    <!-- <node name="get_current" pkg="cilab_nav" type="<이름 지정하기>.py" output="screen"/> -->
+
+    <!-- !!이름지정해야됨!!  -->
+    <!-- 속도 및 현위치 조정하는 python 코드 -->
+    <!-- <node name="adjust_switch" pkg="cilab_nav" type="<이름 지정하기>.py" output="screen"/> -->
+
+
+</launch>
